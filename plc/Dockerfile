@@ -14,7 +14,7 @@ RUN find . -type f -name "*.sh" -exec chmod +x {} \;
 RUN apt-get update && apt-get install -y \
       python3 python3-venv python3-pip sqlite3 \
       build-essential git dos2unix autoconf automake libtool m4 gettext \
-      && find utils/matiec_src -type f -exec dos2unix {} \; \
+      && find utils/ -type f -exec dos2unix {} \; \
       && cd utils/matiec_src && rm -f config/missing \
       && autoreconf --install --force --verbose \
       && rm -rf /var/lib/apt/lists/* \
