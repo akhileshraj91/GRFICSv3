@@ -1,76 +1,217 @@
-# GRFICSv3
-Cyberphysical simulation of a chemical plant
+# GRFICSv3 —  Industrial Cyber-Physical Range
+
+> **GRFICSv3** is a fully containerized cyber-physical simulation of a chemical plant.
+> It brings together realistic process dynamics, industrial protocols, engineering tools, and attacker infrastructure all inside Docker.
+>
+> Use it to explore **ICS cybersecurity**, practice **incident response**, or develop and test **defensive and offensive tools** in a safe, hands-on environment.
 
 ![Chemical plant screenshot](/images/tanks.png)
 
-# Installation
+---
 
-## Installing Docker
+## 🚀 Key Features
 
-GRFICS uses Docker and Docker Compose. For a more efficient, lighter-weight installation, use Linux (either VM or WSL). There is currently a known issue with Docker Desktop on Windows that we are working on resolving, so it is not recommended at this time.
+* **End-to-end ICS simulation** — PLCs, HMIs, engineering workstations, routers, and attacker tools
+* **3D process visualization** — watch tank levels and valves respond in real time
+* **Virtual Walkthroughs** — explore the warehouse in first person, observing physical layouts and security lapses 
+* **Built-in attack & defense tools** — Kali Linux, MITRE Caldera, and a custom router/IDS interface
+* **Modular, containerized design** — launch everything with a single `docker compose up`
+* **Realistic networking** — segmented process and enterprise zones with controllable traffic flow
 
-On Linux, run the following commands
+---
+
+# 🤌 Installation
+
+## 1. Prerequisites
+
+* **Recommended OS:** Linux (native, VM, or WSL2)
+  GRFICS uses Docker and Docker Compose. Linux provides the lightest and most reliable experience.
+* **Required packages:** Docker, Git, and Git LFS
+
+Example install on Debian/Ubuntu:
+
+```bash
+sudo apt update
+sudo apt install -y docker git git-lfs
+# (Optional) allow non-root docker use
+sudo usermod -aG docker $USER
 ```
-sudo apt-get install docker git git-lfs
-```
 
-## Installing GRFICS
+Log out and back in if you added yourself to the Docker group.
 
-First, clone this repo.
-```
-git clone https://github.com/Fortiphyd/GRFICSv3
-```
+---
 
+## 2. Install GRFICS
 
-In the command line, change directories to the top-level directory of the cloned repo. Now run
+Clone and build:
 
-```
+```bash
+git clone https://github.com/Fortiphyd/GRFICSv3.git
 cd GRFICSv3
 docker compose build
 ```
 
-and then run
+Start the environment:
 
+```bash
+docker compose up -d
 ```
-docker compose up
+
+Watch logs (optional):
+
+```bash
+docker compose logs -f
 ```
 
-If building fails with a message about being unable to create a network interface, edit docker-compose.yml lines 140 and 149 to match the name of your network interface.
+Then open your browser and visit **[http://localhost](http://localhost)** —
+you should see the 3D chemical plant simulation come to life.
 
-Open a web browser and visit localhost. If GRFICS is built correctly, you should see a visualization of a chemical plant.
+---
 
-# Using GRFICS
-## Starting and stopping the environment
-If you are using Docker Desktop, you can use the GUI as you would any other Docker program, clicking stop and play on individual containers, or on the overall container. If you are using the command line, you can use the standard Docker commands, such as
+# 🗞 Using GRFICS
+
+## Starting & Stopping
+
+* To stop all running containers:
+
+  ```bash
+  docker compose down
+  ```
+* To stop but keep containers/images:
+
+  ```bash
+  docker compose stop
+  ```
+* To restart later:
+
+  ```bash
+  docker compose start
+  ```
+
+---
+
+## Core Containers & Access Points
+
+| Container                   | How to Access                                                           | Credentials           | Description                               |
+| --------------------------- | ----------------------------------------------------------------------- | --------------------- | ----------------------------------------- |
+| **Simulation**              | [http://localhost](http://localhost)                                    | —                     | 3D chemical plant visualization           |
+| **Engineering Workstation** | [http://localhost:6080/vnc.html](http://localhost:6080/vnc.html)        | —                     | HMI and PLC configuration                 |
+| **Kali**                    | [http://localhost:6088/vnc.html](http://localhost:6088/vnc.html)        | `kali : kali`         | Attacker VM for exploitation and scanning |
+| **Caldera**                 | [http://localhost:8888](http://localhost:8888)                          | `red : fortiphyd-red` | MITRE Caldera with OT plugin              |
+| **PLC (OpenPLC)**           | [http://localhost:8080](http://localhost:8080) or `192.168.95.2:8080`   | `openplc : openplc`   | Programmable logic controller             |
+| **HMI**                     | [http://localhost:6081](http://localhost:6081) or `192.168.90.107:8080` | `admin : admin`       | Operator interface                        |
+| **Router / Firewall UI**    | `192.168.90.200:5000` or `192.168.95.200:5000`                          | `admin : password`    | View or modify firewall rules             |
+
+---
+
+## Screenshots
+
+Simulation
+
+![Simulation screenshot](/images/sim.png)
+
+Kali
+
+![Kali screenshot](/images/kali.png)
+
+Caldera
+
+![Caldera screenshot](/images/caldera.png)
+
+Engineering Workstation
+
+![EW screenshot](/images/ew.png)
+
+Router / Firewall
+
+![Router screenshot](/images/firewall.png)
+
+PLC
+
+![PLC screenshot](/images/plc.png)
+
+HMI
+
+![HMI screenshot](/images/hmi.png)
+
+---
+
+# 🛠 Troubleshooting
+
+### Network interface errors
+
+If build or startup fails with a message about creating a network interface,
+edit `docker-compose.yml` (around lines 140 and 149) to match your actual network interface name (e.g., `eth0`, `enp0s3`, or your WSL adapter).
+
+### Permission errors
+
+If you see `permission denied` errors running Docker commands, prefix with `sudo` or ensure your user is added to the `docker` group.
+
+### Container won’t start
+
+Run:
+
+```bash
+docker compose logs <service-name>
 ```
-docker stop $(docker ps -q)
+
+to view detailed logs, or `docker compose ps` to check the status of all containers.
+
+### Resetting everything
+
+To rebuild from scratch:
+
+```bash
+docker compose down --volumes
+docker compose up -d --build
 ```
-to stop all running containers
 
-## Containers
- - Simulation: Accessible in your browser at localhost
-   
-   ![Simulation screenshot](/images/sim.png)
- - Kali: Accessible over noVNC in your browser at localhost:6088/vnc.html, with credentials kali:kali
-   
-   ![Kali screenshot](/images/kali.png)
- - Caldera: Accessible in your browser at localhost:8888, with credentials red:fortiphyd-red
-   
-   ![Caldera screenshot](/images/caldera.png)
- - Engineering Workstation: Accessible over noVNC in your browser at localhost:6080/vnc.html
-   
- ![EW screenshot](/images/ew.png)
- - Router: Accessible from inside either simulated network at 192.168.90.200:5000 or 192.168.95.200:5000 with credentials admin:password
-   
-   ![Router screenshot](/images/firewall.png)
- - PLC: Accessible in your browser at localhost:8080 or in the network at 192.168.95.2:8080 with credentials openplc:openplc
-   
-   ![PLC screenshot](/images/plc.png)
- - HMI: Accessible in your browser at localhost:6081 or in the network at 192.168.90.107:8080 with credentials admin:admin
-   
-   ![HMI screenshot](/images/hmi.png)
+---
 
-## Connecting to containers
-In Docker Desktop, each container will have a link that you can click on to connect to that container. The simulation VM link will display the 3d graphical model of the chemical plant. The PLC and HMI link will lead to a login page to those devices.
+# ⚙️ Development Tips
 
-The attacker and engineering workstation VM link will lead to an index page. Click on the vnc link from there to connect to that container over VNC.
+* To rebuild a single service:
+
+  ```bash
+  docker compose build <service-name>
+  docker compose up -d <service-name>
+  ```
+* To monitor logs interactively:
+
+  ```bash
+  docker compose logs -f
+  ```
+* To check which containers are running:
+
+  ```bash
+  docker compose ps
+  ```
+
+---
+
+# 🌐 About GRFICS
+
+GRFICS was created by **Fortiphyd Logic** to make industrial cybersecurity **accessible, hands-on, and realistic**.
+Version 3 takes everything from earlier GRFICS releases and brings it into a modern, containerized architecture
+ready for use in classrooms, cyber ranges, and research environments.
+
+Learn more at [https://fortiphyd.com](https://fortiphyd.com)
+
+---
+
+# 💡 More from Fortiphyd Logic
+
+If you enjoy GRFICSv3, you may be interested in our commercial offerings that expand on GRFICS with:
+
+- A growing catalog of **sector-specific simulations** — power grid, water, manufacturing, and maritime
+- **Hosted cyber ranges** for teams and classrooms, no installation required
+
+Visit [https://fortiphyd.com](https://fortiphyd.com) to learn more, or [follow us on LinkedIn](https://www.linkedin.com/company/fortiphyd) for updates, new labs, and release announcements.
+
+💛 If you use GRFICSv3 in your research, teaching, or demos and want to help sustain its development, consider **sponsoring the project**. Even small contributions help us keep improving the open version!
+
+---
+
+> **Build. Break. Defend. Learn.**  
+> GRFICSv3 brings industrial cybersecurity to life, no hardware required.
+
