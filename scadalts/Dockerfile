@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk
+FROM eclipse-temurin:11
 
 ENV SCADA_LTS_VERSION=2.7.8.1 \
     CATALINA_HOME=/usr/local/tomcat \
