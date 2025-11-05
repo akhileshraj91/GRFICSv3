@@ -8,7 +8,7 @@ on:
 
 env:
   DOCKER_TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
-  SERVICES: hmi plc router workstation simulation scadalts attacker caldera
+  SERVICES: plc router workstation simulation scadalts attacker caldera
 
 jobs:
   # ================================================================
