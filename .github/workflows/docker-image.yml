@@ -29,7 +29,7 @@ jobs:
 
       - name: Build and push each image
         run: |
-          SERVICES=("hmi" "plc" "ews" "simulation" "router" "caldera" "kali")
+          SERVICES=("scadalts" "plc" "workstation" "simulation" "router" "caldera" "attacker")
 
           for SERVICE in "${SERVICES[@]}"; do
             IMAGE="${DOCKERHUB_USERNAME}/grfics-${SERVICE}:${DOCKER_TAG}"
