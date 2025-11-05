@@ -2,14 +2,18 @@ name: Build and Push Docker Images
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   release:
     types: [published]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    env:
+      DOCKER_TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,15 +27,16 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push images
-        uses: docker/compose-action@v2
-        with:
-          compose-file: docker-compose.yml
-          push: true
-          build: true
-          # Optional: specify tags via environment variable
-        env:
-          DOCKER_TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
+      - name: Build and push each image
+        run: |
+          SERVICES=("hmi" "plc" "ews" "simulation" "router" "caldera" "kali")
 
-      - name: Print tag info
-        run: echo "Built and pushed images with tag $DOCKER_TAG"
+          for SERVICE in "${SERVICES[@]}"; do
+            IMAGE="${DOCKERHUB_USERNAME}/grfics-${SERVICE}:${DOCKER_TAG}"
+            echo "🚀 Building and pushing $IMAGE"
+            docker build -t "$IMAGE" "./${SERVICE}"
+            docker push "$IMAGE"
+          done
+
+      - name: Print summary
+        run: echo "✅ All images pushed with tag $DOCKER_TAG"
