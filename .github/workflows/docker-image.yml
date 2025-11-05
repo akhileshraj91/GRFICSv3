@@ -18,6 +18,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up QEMU for multi-arch
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -27,15 +30,21 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push each image
+      - name: Build and push multi-arch image
         run: |
+          set -euo pipefail
           SERVICES=("scadalts" "plc" "workstation" "simulation" "router" "caldera" "attacker")
 
           for SERVICE in "${SERVICES[@]}"; do
             IMAGE="${DOCKERHUB_USERNAME}/grfics-${SERVICE}:${DOCKER_TAG}"
-            echo "🚀 Building and pushing $IMAGE"
-            docker build -t "$IMAGE" "./${SERVICE}"
-            docker push "$IMAGE"
+            echo "🚀 Building multi-arch image ${IMAGE}"
+            docker buildx build \
+              --platform linux/amd64,linux/arm64 \
+              --tag "${IMAGE}" \
+              --push \
+              --cache-from type=gha \
+              --cache-to type=gha,mode=max \
+              "./${SERVICE}"
           done
 
       - name: Print summary
