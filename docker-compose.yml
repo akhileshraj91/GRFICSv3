@@ -3,7 +3,7 @@
 
 services:
   simulation:
-    image: grfics-simulation
+    image: fortiphyd/grfics-simulation
     container_name: simulation
     hostname: simulation
     build: ./simulation
@@ -24,7 +24,7 @@ services:
     # command: sh -c "./simulation/simulation & cd modbus && ./run_all.sh"
 
   plc:
-    image: v3
+    image: fortiphyd/grfics-plc
     container_name: plc
     hostname: plc
     build: ./plc
@@ -44,7 +44,7 @@ services:
 
 
   ews:
-    image: workstation
+    image: fortiphyd/grfics-workstation
     container_name: EWS
     hostname: EWS
     build: ./workstation
@@ -61,7 +61,7 @@ services:
     # command: sh -c "./simulation/simulation & cd modbus && ./run_all.sh"
 
   hmi:
-    image: scadalts
+    image: fortiphyd/grfics-scadalts
     container_name: HMI
     build: ./scadalts
     dns:
@@ -81,7 +81,7 @@ services:
     # command: sh -c "./simulation/simulation & cd modbus && ./run_all.sh"
 
   kali:
-    image: kali-novnc
+    image: fortiphyd/grfics-attacker
     container_name: kali
     hostname: kali
     build: ./attacker
@@ -95,7 +95,7 @@ services:
         ipv4_address: 192.168.90.6
 
   router:
-    image: router
+    image: fortiphyd/grfics-router
     container_name: router
     hostname: router
     build: ./router
@@ -121,7 +121,7 @@ services:
         ipv4_address: 192.168.90.200
 
   caldera:
-    image: caldera
+    image: fortiphyd/grfics-caldera
     container_name: caldera
     hostname: caldera
     build: ./caldera
