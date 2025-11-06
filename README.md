@@ -43,7 +43,25 @@ Log out and back in if you added yourself to the Docker group.
 
 ## 2. Install GRFICS
 
-Clone and build:
+You can either **pull the prebuilt images from Docker Hub** (quick and easy)  
+or **build everything locally** if you want to modify or customize.
+
+---
+
+### 🐋 Option A: Pull prebuilt images (recommended)
+
+The fastest way to get started — no building required!
+
+```bash
+# Download the latest docker-compose.yml
+curl -O https://raw.githubusercontent.com/Fortiphyd/GRFICSv3/main/docker-compose.yml
+
+# Start GRFICS using prebuilt images from Docker Hub
+docker compose pull
+docker compose up -d
+```
+
+### 🏗️ Option B: Clone and build
 
 ```bash
 git clone https://github.com/Fortiphyd/GRFICSv3.git
