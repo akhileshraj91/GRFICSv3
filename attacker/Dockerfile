@@ -17,7 +17,7 @@ RUN apt-get update && \
       x11vnc xvfb xauth x11-utils \
       wget git nano python3 python3-pip python3-websockify \
       ca-certificates supervisor sudo \
-      net-tools procps pulseaudio-utils \
+      net-tools procps pulseaudio-utils dsniff \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
