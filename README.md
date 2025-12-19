@@ -147,6 +147,14 @@ you should see the 3D chemical plant simulation come to life.
 
 ---
 
+## Physical Vulnerabilities
+
+One of the most exciting new features in this version of GRFICS is the ability to virtually walk the entire plant, learning what a typical ICS plant looks like and discovering common "physical" vulnerabilities or bad cyber hygiene practices. As you discover these issues, the "Vulnerabilities Found" tracker in the top left keeps count so you can make sure to discover all of them.
+
+![Physical Vulnerability Tracker](/images/vulns.png)
+
+---
+
 ## Screenshots
 
 Simulation
