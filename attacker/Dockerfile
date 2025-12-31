@@ -53,4 +53,4 @@ EXPOSE ${NOVNC_PORT} ${VNC_PORT}
 USER root
 
 ENTRYPOINT ["/usr/local/bin/start.sh"]
-CMD ["supervisord", "-n", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
