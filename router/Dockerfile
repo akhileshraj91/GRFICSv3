@@ -32,6 +32,6 @@ COPY ulogd.conf /etc/ulogd.conf
 
 RUN chmod +x /entrypoint.sh
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/router.conf"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
 
 ENTRYPOINT ["/entrypoint.sh"]
