@@ -257,7 +257,7 @@ If you enjoy GRFICSv3, you may be interested in our commercial offerings that ex
 - A growing catalog of **sector-specific simulations** — power grid, water, manufacturing, and maritime
 - **Hosted cyber ranges** for teams and classrooms, no installation required
 
-Visit [https://fortiphyd.com](https://fortiphyd.com) to learn more, or [follow us on LinkedIn](https://www.linkedin.com/company/fortiphyd) for updates, new labs, and release announcements.
+Visit [https://fortiphyd.com](https://fortiphyd.com) to learn more, or [follow us on LinkedIn](https://www.linkedin.com/company/fortiphyd-logic) for updates, new labs, and release announcements.
 
 💛 If you use GRFICSv3 in your research, teaching, or demos and want to help sustain its development, consider **sponsoring the project**. Even small contributions help us keep improving the open version!
 
