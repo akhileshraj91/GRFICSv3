@@ -1,22 +1,62 @@
-# GRFICSv3 —  Industrial Cyber-Physical Range
+# GRFICSv3 —  Open Source OT Security Lab
 
 > **GRFICSv3** is a fully containerized cyber-physical simulation of a chemical plant.
 > It brings together realistic process dynamics, industrial protocols, engineering tools, and attacker infrastructure all inside Docker.
 >
-> Use it to explore **ICS cybersecurity**, practice **incident response**, or develop and test **defensive and offensive tools** in a safe, hands-on environment.
+> Use it to explore **ICS / OT security**, practice **incident response**, or develop and test **defensive and offensive tools** in a safe, hands-on environment.
 
-![Chemical plant screenshot](/images/tanks.png)
+<p align="center">
+  <img src="/images/tanks.png" alt="OT security lab simulation view" width="700">
+</p>
+
+
+---
+
+## 🎯 Who is GRFICS for?
+
+GRFICSv3 is designed for anyone learning or teaching **OT and ICS security**, including:
+
+- OT / ICS security practitioners and engineers
+- Blue teams and incident responders training on industrial environments
+- Red teams exploring ICS-specific attack paths
+- Educators building hands-on industrial cybersecurity labs
+- Researchers developing or testing OT security tools
+
+If you’ve ever wanted a realistic **OT security lab** without racks of hardware,
+this is for you.
 
 ---
 
 ## 🚀 Key Features
 
-* **End-to-end ICS simulation** — PLCs, HMIs, engineering workstations, routers, and attacker tools
+* **End-to-end OT / ICS security lab** — PLCs, HMIs, engineering workstations, routers, and attacker tools
 * **3D process visualization** — watch tank levels and valves respond in real time
 * **Virtual Walkthroughs** — explore the warehouse in first person, observing physical layouts and security lapses 
 * **Built-in attack & defense tools** — Kali Linux, MITRE Caldera, and a custom router/IDS interface
 * **Modular, containerized design** — launch everything with a single `docker compose up`
 * **Realistic networking** — segmented process and enterprise zones with controllable traffic flow
+
+---
+
+## Physical Vulnerabilities & Cyber Hygiene
+
+One of the most powerful aspects of GRFICSv3 as an **OT security lab** is the ability to
+virtually walk the entire plant and warehouse.
+
+This allows learners to understand what a real industrial environment looks like and
+identify common **physical security and cyber hygiene failures**, such as:
+
+- Passwords written on sticky notes
+- Propped-open security doors
+- Unlocked cabinets and control panels
+- Poor separation between IT and OT spaces
+
+As vulnerabilities are discovered, the **Vulnerabilities Found** tracker in the top-left
+corner keeps score — making this ideal for self-paced learning and classroom exercises.
+
+<p align="center">
+  <img src="/images/vulns.png" alt="Track physical vulnerabilities and cyber hygiene" width="700">
+</p>
 
 ---
 
@@ -145,13 +185,6 @@ you should see the 3D chemical plant simulation come to life.
 | **HMI**                     | [http://localhost:6081](http://localhost:6081) or `192.168.90.107:8080` | `admin : admin`       | Operator interface                        |
 | **Router / Firewall UI**    | `192.168.90.200:5000` or `192.168.95.200:5000`                          | `admin : password`    | View or modify firewall rules             |
 
----
-
-## Physical Vulnerabilities
-
-One of the most exciting new features in this version of GRFICS is the ability to virtually walk the entire plant, learning what a typical ICS plant looks like and discovering common "physical" vulnerabilities or bad cyber hygiene practices. As you discover these issues, the "Vulnerabilities Found" tracker in the top left keeps count so you can make sure to discover all of them.
-
-![Physical Vulnerability Tracker](/images/vulns.png)
 
 ---
 
