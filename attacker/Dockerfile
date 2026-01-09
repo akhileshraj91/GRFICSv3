@@ -48,6 +48,11 @@ COPY default.xml /etc/xdg/xfce4/panel/default.xml
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
+# allow passwordless sudo
+RUN echo "kali ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/kali \
+ && chmod 440 /etc/sudoers.d/kali
+
+
 EXPOSE ${NOVNC_PORT} ${VNC_PORT}
 
 USER root
