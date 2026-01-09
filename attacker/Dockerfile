@@ -46,6 +46,7 @@ COPY default.xml /etc/xdg/xfce4/panel/default.xml
 
 COPY index.html /opt/noVNC/index.html
 
+
 # Entrypoint script that sets password and starts the desktop session
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
@@ -53,6 +54,9 @@ RUN chmod +x /usr/local/bin/start.sh
 # allow passwordless sudo
 RUN echo "kali ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/kali \
  && chmod 440 /etc/sudoers.d/kali
+
+ RUN sed -i 's/^#*autologin-user=.*/autologin-user=kali/' /etc/lightdm/lightdm.conf || true \
+ && sed -i 's/^#*autologin-user-timeout=.*/autologin-user-timeout=0/' /etc/lightdm/lightdm.conf || true
 
 
 EXPOSE ${NOVNC_PORT} ${VNC_PORT}
