@@ -44,6 +44,8 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 COPY default.xml /etc/xdg/xfce4/panel/default.xml
 
+COPY index.html /opt/noVNC/index.html
+
 # Entrypoint script that sets password and starts the desktop session
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh

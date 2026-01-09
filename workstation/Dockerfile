@@ -85,10 +85,15 @@ Categories=Development;\n" \
     chmod +x /home/${USERNAME}/Desktop/OpenPLC.desktop && \
     chown ${USERNAME}:${USERNAME} /home/${USERNAME}/Desktop/OpenPLC.desktop
 
+    
 
 COPY places.sqlite /home/engineer/.mozilla/firefox/ztc0wi0n.default-release/places.sqlite
 RUN chown engineer /home/engineer/.mozilla/firefox/ztc0wi0n.default-release/places.sqlite
 RUN chown -R engineer:engineer /home/engineer 
+
+
+COPY index.html /opt/noVNC/index.html
+
 
 EXPOSE ${NOVNC_PORT} ${VNC_PORT}
 
