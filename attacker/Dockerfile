@@ -55,8 +55,23 @@ RUN chmod +x /usr/local/bin/start.sh
 RUN echo "kali ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/kali \
  && chmod 440 /etc/sudoers.d/kali
 
- RUN sed -i 's/^#*autologin-user=.*/autologin-user=kali/' /etc/lightdm/lightdm.conf || true \
+RUN sed -i 's/^#*autologin-user=.*/autologin-user=kali/' /etc/lightdm/lightdm.conf || true \
  && sed -i 's/^#*autologin-user-timeout=.*/autologin-user-timeout=0/' /etc/lightdm/lightdm.conf || true
+
+RUN mkdir -p /home/kali/.config/autostart \
+ && cp /etc/xdg/autostart/xfce4-power-manager.desktop /home/kali/.config/autostart/ \
+ && sed -i 's/^Exec=/#Exec=/' /home/kali/.config/autostart/xfce4-power-manager.desktop \
+ && echo 'Hidden=true' >> /home/kali/.config/autostart/xfce4-power-manager.desktop \
+ && chown -R kali:kali /home/kali/.config
+
+
+RUN mv /usr/bin/xflock4 /usr/bin/xflock4.real && \
+    printf '#!/bin/sh\nexit 0\n' > /usr/bin/xflock4 && \
+    chmod +x /usr/bin/xflock4
+
+
+COPY xfce-no-lock.sh /usr/local/bin/xfce-no-lock.sh
+RUN chmod +x /usr/local/bin/xfce-no-lock.sh
 
 
 EXPOSE ${NOVNC_PORT} ${VNC_PORT}
