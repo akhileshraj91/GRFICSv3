@@ -39,7 +39,6 @@ jobs:
           echo "$CHANGED"
 
           declare -A MAP=(
-            ["hmi"]="hmi/"
             ["plc"]="plc/"
             ["router"]="router/"
             ["workstation"]="workstation/"
@@ -92,6 +91,10 @@ jobs:
           SERVICES=$(echo '${{ needs.detect-changes.outputs.services }}' | jq -r '.[]')
           set -euo pipefail
           for SERVICE in $SERVICES; do
+            if [ ! -d "./${SERVICE}" ]; then
+              echo "⚠️ Skipping ${SERVICE}: directory does not exist"
+              continue
+            fi
             IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/grfics-${SERVICE}"
             echo "🚀 Building ${IMAGE}:${DOCKER_TAG} (amd64)"
             docker buildx build \
@@ -129,6 +132,10 @@ jobs:
           SERVICES=$(echo '${{ needs.detect-changes.outputs.services }}' | jq -r '.[]')
           set -euo pipefail
           for SERVICE in $SERVICES; do
+            if [ ! -d "./${SERVICE}" ]; then
+              echo "⚠️ Skipping ${SERVICE}: directory does not exist"
+              continue
+            fi
             IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/grfics-${SERVICE}"
             echo "🚀 Building ${IMAGE}:${DOCKER_TAG} (arm64)"
             docker buildx build \
