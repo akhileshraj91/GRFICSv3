@@ -44,9 +44,44 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 COPY default.xml /etc/xdg/xfce4/panel/default.xml
 
+COPY index.html /opt/noVNC/index.html
+
+
 # Entrypoint script that sets password and starts the desktop session
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
+
+# allow passwordless sudo
+RUN echo "kali ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/kali \
+ && chmod 440 /etc/sudoers.d/kali
+
+RUN sed -i 's/^#*autologin-user=.*/autologin-user=kali/' /etc/lightdm/lightdm.conf || true \
+ && sed -i 's/^#*autologin-user-timeout=.*/autologin-user-timeout=0/' /etc/lightdm/lightdm.conf || true
+
+
+# Disable XDG autostart entries that cause blank/lock in VNC/Xvfb
+RUN for f in xfce4-screensaver.desktop xfce4-power-manager.desktop light-locker.desktop; do \
+      if [ -f "/etc/xdg/autostart/$f" ]; then \
+        sed -i '/^Hidden=/d' "/etc/xdg/autostart/$f" && \
+        printf '\nHidden=true\n' >> "/etc/xdg/autostart/$f"; \
+      fi; \
+    done
+
+
+
+RUN mv /usr/bin/xflock4 /usr/bin/xflock4.real && \
+    printf '#!/bin/sh\nexit 0\n' > /usr/bin/xflock4 && \
+    chmod +x /usr/bin/xflock4
+
+RUN if [ -f /usr/bin/xfce4-screensaver-command ] && [ ! -f /usr/bin/xfce4-screensaver-command.real ]; then \
+      mv /usr/bin/xfce4-screensaver-command /usr/bin/xfce4-screensaver-command.real; \
+    fi && \
+    printf '#!/bin/sh\nexit 0\n' > /usr/bin/xfce4-screensaver-command && \
+    chmod +x /usr/bin/xfce4-screensaver-command
+
+COPY xfce-no-lock.sh /usr/local/bin/xfce-no-lock.sh
+RUN chmod +x /usr/local/bin/xfce-no-lock.sh
+
 
 EXPOSE ${NOVNC_PORT} ${VNC_PORT}
 

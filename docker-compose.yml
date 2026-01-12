@@ -93,6 +93,9 @@ services:
       a-grfics-admin:  # gets random bridge IP (e.g., 172.18.x.x)
       c-dmz-net:
         ipv4_address: 192.168.90.6
+    sysctls:
+      net.ipv4.conf.default.arp_announce: 2
+      net.ipv4.conf.all.arp_announce: 2
 
   router:
     image: fortiphyd/grfics-router
