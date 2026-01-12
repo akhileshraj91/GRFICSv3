@@ -58,17 +58,26 @@ RUN echo "kali ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/kali \
 RUN sed -i 's/^#*autologin-user=.*/autologin-user=kali/' /etc/lightdm/lightdm.conf || true \
  && sed -i 's/^#*autologin-user-timeout=.*/autologin-user-timeout=0/' /etc/lightdm/lightdm.conf || true
 
-RUN mkdir -p /home/kali/.config/autostart \
- && cp /etc/xdg/autostart/xfce4-power-manager.desktop /home/kali/.config/autostart/ \
- && sed -i 's/^Exec=/#Exec=/' /home/kali/.config/autostart/xfce4-power-manager.desktop \
- && echo 'Hidden=true' >> /home/kali/.config/autostart/xfce4-power-manager.desktop \
- && chown -R kali:kali /home/kali/.config
+
+# Disable XDG autostart entries that cause blank/lock in VNC/Xvfb
+RUN for f in xfce4-screensaver.desktop xfce4-power-manager.desktop light-locker.desktop; do \
+      if [ -f "/etc/xdg/autostart/$f" ]; then \
+        sed -i '/^Hidden=/d' "/etc/xdg/autostart/$f" && \
+        printf '\nHidden=true\n' >> "/etc/xdg/autostart/$f"; \
+      fi; \
+    done
+
 
 
 RUN mv /usr/bin/xflock4 /usr/bin/xflock4.real && \
     printf '#!/bin/sh\nexit 0\n' > /usr/bin/xflock4 && \
     chmod +x /usr/bin/xflock4
 
+RUN if [ -f /usr/bin/xfce4-screensaver-command ] && [ ! -f /usr/bin/xfce4-screensaver-command.real ]; then \
+      mv /usr/bin/xfce4-screensaver-command /usr/bin/xfce4-screensaver-command.real; \
+    fi && \
+    printf '#!/bin/sh\nexit 0\n' > /usr/bin/xfce4-screensaver-command && \
+    chmod +x /usr/bin/xfce4-screensaver-command
 
 COPY xfce-no-lock.sh /usr/local/bin/xfce-no-lock.sh
 RUN chmod +x /usr/local/bin/xfce-no-lock.sh
