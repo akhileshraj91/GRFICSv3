@@ -23,6 +23,12 @@
         font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       }
 
+      :root{
+          --accent: #d7b114;          /* Fortiphyd gold (tweak if needed) */
+          --accent-soft: rgba(215,177,20,0.14);
+          --accent-faint: rgba(215,177,20,0.08);
+      }
+
       .app {
         display: flex;
         height: 100vh;
@@ -31,17 +37,32 @@
       }
 
       .sidebar {
+        position:relative;
         width: 270px;
         min-width: 240px;
         max-width: 320px;
-        background: #0f1722;
+        background:
+          radial-gradient(800px 500px at -20% 10%, rgba(215,177,20,0.10), transparent 55%),
+          #0f1722;
         border-right: 1px solid rgba(255,255,255,0.08);
+        box-shadow: inset -3px 0 0 var(--accent-faint);
         padding: 18px 14px;
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
         gap: 14px;
       }
+
+      .sidebar::before{
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 3px;
+        height: 100%;
+        background: rgba(215,177,20,0.35);
+        box-shadow: 0 0 14px rgba(215,177,20,0.10);
+}
 
       .brand {
         display: flex;
@@ -54,8 +75,8 @@
         width: 10px;
         height: 10px;
         border-radius: 50%;
-        background: #37d67a;
-        box-shadow: 0 0 0 3px rgba(55,214,122,0.12);
+        background: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-soft);
       }
 
       .brand h1 {
@@ -97,7 +118,8 @@
       .btn:hover {
         transform: translateY(-1px);
         background: rgba(255,255,255,0.07);
-        border-color: rgba(255,255,255,0.18);
+        border-color: rgba(215,177,20,0.28);
+        box-shadow: 0 0 0 3px var(--accent-faint);
       }
 
       .btn:active {
@@ -204,6 +226,7 @@
         justify-content: space-between;
         padding: 0 14px;
         border-bottom: 1px solid rgba(255,255,255,0.08);
+        box-shadow: inset 0 -2px 0 var(--accent-faint);
         background: rgba(255,255,255,0.02);
       }
 
@@ -220,6 +243,8 @@
 
       .small-btn {
         border: 1px solid rgba(255,255,255,0.12);
+        border-color: rgba(215,177,20,0.28);
+        box-shadow: 0 0 0 3px var(--accent-faint);
         background: rgba(255,255,255,0.04);
         color: #e8eef6;
         border-radius: 10px;
@@ -463,7 +488,6 @@ const SIM_POLL_MS = 3000;
       <!-- Left navigation -->
       <aside class="sidebar">
         <div class="brand">
-          <div class="dot"></div>
           <div>
             <h1>GRFICSv3</h1>
             <p>Lab dashboard</p>
