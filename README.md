@@ -6,7 +6,7 @@
 > Use it to explore **ICS / OT security**, practice **incident response**, or develop and test **defensive and offensive tools** in a safe, hands-on environment.
 
 <p align="center">
-  <img src="/images/tanks.png" alt="OT security lab simulation view" width="700">
+  <img src="/images/dashboard.png" alt="OT security lab dashboard" width="700">
 </p>
 
 
@@ -178,8 +178,8 @@ you should see the 3D chemical plant simulation come to life.
 | Container                   | How to Access                                                           | Credentials           | Description                               |
 | --------------------------- | ----------------------------------------------------------------------- | --------------------- | ----------------------------------------- |
 | **Simulation**              | [http://localhost](http://localhost)                                    | —                     | 3D chemical plant visualization           |
-| **Engineering Workstation** | [http://localhost:6080/vnc.html](http://localhost:6080/vnc.html)        | —                     | HMI and PLC configuration                 |
-| **Kali**                    | [http://localhost:6088/vnc.html](http://localhost:6088/vnc.html)        | `kali : kali`         | Attacker VM for exploitation and scanning |
+| **Engineering Workstation** | [http://localhost:6080](http://localhost:6080)        | —                     | HMI and PLC configuration                 |
+| **Kali**                    | [http://localhost:6088](http://localhost:6088)        | `kali : kali`         | Attacker VM for exploitation and scanning |
 | **Caldera**                 | [http://localhost:8888](http://localhost:8888)                          | `red : fortiphyd-red` | MITRE Caldera with OT plugin              |
 | **PLC (OpenPLC)**           | [http://localhost:8080](http://localhost:8080) or `192.168.95.2:8080`   | `openplc : openplc`   | Programmable logic controller             |
 | **HMI**                     | [http://localhost:6081](http://localhost:6081) or `192.168.90.107:8080` | `admin : admin`       | Operator interface                        |
