@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>TrainingGrounds Dashboard</title>
+    <title>GRFICSv3 OT Security Lab Dashboard</title>
 
     <!-- Keep your existing Unity assets -->
     <link rel="shortcut icon" href="TemplateData/favicon.ico" />
@@ -91,6 +91,7 @@
         display: flex;
         gap: 12px;
         align-items: center;
+        position: relative;
       }
 
       .btn:hover {
@@ -120,6 +121,7 @@
         flex-direction: column;
         gap: 2px;
         min-width: 0;
+        flex: 1;
       }
 
       .btn .meta .label {
@@ -154,6 +156,29 @@
         border-radius: 50%;
         background: #ffd166;
         box-shadow: 0 0 0 3px rgba(255,209,102,0.12);
+      }
+
+      /* --- Tool status chip inside buttons --- */
+      .tool-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        opacity: 0.85;
+        white-space: nowrap;
+      }
+
+      .tool-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #6b7280; /* default gray */
+        box-shadow: 0 0 0 3px rgba(107,114,128,0.12);
+      }
+
+      .tool-status-text {
+        font-size: 12px;
+        opacity: 0.85;
       }
 
       .sidebar-footer {
@@ -259,34 +284,175 @@
       }
     </style>
 
-    <script>
-      var unityInstance = null;
+<script>
+  var unityInstance = null;
+  const toolPorts = { attacker: 6088, defender: 6080 };
 
-      function openTool(url) {
-        // Open in a new tab; you can change to same-tab if you prefer:
-        // window.location.href = url;
-        window.open(url, "_blank", "noopener,noreferrer");
-      }
+  function openToolPort(port) {
+    const proto = window.location.protocol;   // http: or https:
+    const host  = window.location.hostname;   // localhost or 192.168.1.3 or lab.example.com
+    window.open(`${proto}//${host}:${port}/`, "_blank", "noopener,noreferrer");
+  }
 
-      function setStatus(text, color) {
-        const label = document.getElementById("statusLabel");
-        const dot = document.getElementById("statusDot");
-        if (label) label.textContent = text;
-        if (dot && color) dot.style.background = color;
-      }
+  function setStatus(text, color) {
+    const label = document.getElementById("statusLabel");
+    const dot = document.getElementById("statusDot");
+    if (label) label.textContent = text;
+    if (dot && color) dot.style.background = color;
+  }
 
-      window.addEventListener("load", function () {
-        // Unity init (keep your current JSON path)
-        unityInstance = UnityLoader.instantiate(
-          "unityContainer",
-          "Build/ChemicalPlant.json",
-          { onProgress: UnityProgress }
-        );
+  // ---- Tool status polling (stable + no flicker) ----
 
-        // Light-touch "ready" indicator (UnityProgress will still show load progress)
-        setStatus("Simulation loading…", "#ffd166");
-      });
-    </script>
+  // Tuning knobs
+  const POLL_MS_STABLE = 6000;   // when stable, check less often
+  const POLL_MS_UNSTABLE = 1500; // when starting/flapping, check more often
+  const STREAK_TO_CHANGE = 2;    // require 2 consecutive results to flip state
+
+  const toolState = {
+    attacker: { current: null, okStreak: 0, failStreak: 0 },
+    defender: { current: null, okStreak: 0, failStreak: 0 },
+  };
+
+  function setToolStatus(toolName, ok, detailText) {
+    const dot = document.getElementById(`${toolName}Dot`);
+    const text = document.getElementById(`${toolName}Text`);
+    if (!dot || !text) return;
+
+    if (ok === true) {
+      dot.style.background = "#37d67a";
+      dot.style.boxShadow = "0 0 0 3px rgba(55,214,122,0.12)";
+      text.textContent = detailText || "Reachable";
+    } else if (ok === false) {
+      dot.style.background = "#ffd166"; // yellow for "Starting…"
+      dot.style.boxShadow = "0 0 0 3px rgba(255,209,102,0.12)";
+      text.textContent = detailText || "Starting…";
+    } else {
+      dot.style.background = "#6b7280"; // gray for unknown/checking
+      dot.style.boxShadow = "0 0 0 3px rgba(107,114,128,0.12)";
+      text.textContent = detailText || "Checking…";
+    }
+  }
+
+  async function checkPort(port) {
+    const url = `${location.protocol}//${location.hostname}:${port}/`;
+    try {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 900);
+
+      await fetch(url, { mode: "no-cors", cache: "no-store", signal: ctrl.signal });
+
+      clearTimeout(t);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function applyStabilizedResult(name, okNow) {
+    const s = toolState[name];
+
+    if (okNow) {
+      s.okStreak += 1;
+      s.failStreak = 0;
+    } else {
+      s.failStreak += 1;
+      s.okStreak = 0;
+    }
+
+    // Only flip state after we see a streak
+    if (okNow && s.current !== true && s.okStreak >= STREAK_TO_CHANGE) {
+      s.current = true;
+      setToolStatus(name, true, "Reachable");
+    } else if (!okNow && s.current !== false && s.failStreak >= STREAK_TO_CHANGE) {
+      s.current = false;
+      setToolStatus(name, false, "Starting…");
+    } else if (s.current === null) {
+      // Only show "Checking…" while we don't have enough signal yet
+      setToolStatus(name, null, "Checking…");
+    }
+  }
+
+  function anyUnstable() {
+    return Object.values(toolState).some(s => s.current !== true);
+  }
+
+  async function pollOnce() {
+    const [attOk, defOk] = await Promise.all([
+      checkPort(toolPorts.attacker),
+      checkPort(toolPorts.defender),
+    ]);
+
+    applyStabilizedResult("attacker", attOk);
+    applyStabilizedResult("defender", defOk);
+
+    const next = anyUnstable() ? POLL_MS_UNSTABLE : POLL_MS_STABLE;
+    setTimeout(pollOnce, next);
+  }
+
+const SIM_POLL_MS = 3000;
+
+  function isValidJson(text) {
+    try {
+      const obj = JSON.parse(text);
+      // Basic sanity: must be a non-null object or array
+      return obj !== null && (typeof obj === "object");
+    } catch {
+      return false;
+    }
+  }
+
+  async function checkSimulationJson() {
+    try {
+      const res = await fetch("/data/index.php", { cache: "no-store" });
+      if (!res.ok) return false;
+
+      const text = await res.text();
+      return isValidJson(text);
+    } catch {
+      return false;
+    }
+  }
+
+  // Updates the main pill ONLY when it changes (prevents flicker)
+  let simLastState = null; // null=unknown, true=running, false=not running
+  async function refreshSimulationStatus() {
+    const ok = await checkSimulationJson();
+
+    if (ok === simLastState) return; // no change, don't touch UI
+
+    simLastState = ok;
+    if (ok) {
+      setStatus("Simulation running", "#37d67a");
+    } else {
+      // Pick wording you like; this reads well during boot/restarts
+      setStatus("Simulation starting…", "#ffd166");
+    }
+  }
+
+  // ---- One load handler: init everything ----
+  window.addEventListener("load", function () {
+    // Tool indicators start calm
+    setToolStatus("attacker", null, "Checking…");
+    setToolStatus("defender", null, "Checking…");
+    pollOnce();
+
+    refreshSimulationStatus();
+    setInterval(refreshSimulationStatus, SIM_POLL_MS);
+
+    // Unity init
+    unityInstance = UnityLoader.instantiate(
+      "unityContainer",
+      "Build/ChemicalPlant.json",
+      { onProgress: UnityProgress }
+    );
+
+    setStatus("Simulation loading…", "#ffd166");
+
+    // Simple baseline: mark running after a short delay
+  });
+</script>
+
+
   </head>
 
   <body>
@@ -296,7 +462,7 @@
         <div class="brand">
           <div class="dot"></div>
           <div>
-            <h1>TrainingGrounds</h1>
+            <h1>GRFICSv3</h1>
             <p>Lab dashboard</p>
           </div>
         </div>
@@ -312,7 +478,12 @@
           <div class="icon">🟥</div>
           <div class="meta">
             <div class="label">Attacker Workstation</div>
-            <div class="hint">noVNC • http://localhost:6088</div>
+            <div class="hint">
+              <span class="tool-status">
+                <span id="attackerDot" class="tool-dot"></span>
+                <span id="attackerText" class="tool-status-text">Checking…</span>
+              </span>
+            </div>
           </div>
         </button>
 
@@ -320,7 +491,12 @@
           <div class="icon">🟦</div>
           <div class="meta">
             <div class="label">Defender Workstation</div>
-            <div class="hint">noVNC • http://localhost:6080</div>
+            <div class="hint">
+              <span class="tool-status">
+                <span id="defenderDot" class="tool-dot"></span>
+                <span id="defenderText" class="tool-status-text">Checking…</span>
+              </span>
+            </div>
           </div>
         </button>
 
@@ -335,18 +511,17 @@
         </button>
 
         <div class="sidebar-footer">
-          Tip: If your users connect remotely (not on the same machine), replace <code>localhost</code> with the host/IP,
-          or use relative links if you reverse-proxy these paths.
+          GRFICSv3 is an open-source OT security lab by Fortiphyd Logic
         </div>
       </aside>
 
       <!-- Main content (Unity focus) -->
       <main class="main">
         <div class="topbar">
-          <div class="title">3D Process Simulation</div>
+          <div class="title">Chemical Plant Simulation</div>
           <div class="actions">
-            <button class="small-btn" onclick="openTool('http://localhost:6088/')">Attacker</button>
-            <button class="small-btn" onclick="openTool('http://localhost:6080/')">Defender</button>
+            <button class="small-btn" onclick="openToolPort(6088)">Attacker</button>
+            <button class="small-btn" onclick="openToolPort(6080)">Defender</button>
             <button class="small-btn" onclick="unityInstance && unityInstance.SetFullscreen(1)">Fullscreen</button>
           </div>
         </div>
@@ -358,36 +533,17 @@
     </div>
 
     <script>
-      // If Unity finishes and you have a hook to detect readiness later, you can update status.
-      // For now, we just switch to "Running" after a short delay.
-      setTimeout(function () {
-        setStatus("Simulation running", "#37d67a");
-        checkPort(6080).then(ok => setToolStatus("defender", ok));
-        checkPort(6088).then(ok => setToolStatus("attacker", ok));
-      }, 3500);
+      // Fill in the displayed URLs using current hostname (so no "localhost" hardcoding).
+      (function () {
+        const proto = window.location.protocol;
+        const host  = window.location.hostname;
+        const attacker = `${proto}//${host}:6088/`;
+        const defender = `${proto}//${host}:6080/`;
+        const aEl = document.getElementById("attackerUrlText");
+        const dEl = document.getElementById("defenderUrlText");
+        if (aEl) aEl.textContent = attacker;
+        if (dEl) dEl.textContent = defender;
+      })();
     </script>
-    <script>
-      function openToolPort(port) {
-        const proto = window.location.protocol;       // http: or https:
-        const host  = window.location.hostname;       // localhost or 192.168.1.3 or lab.example.com
-        window.open(`${proto}//${host}:${port}/`, "_blank", "noopener,noreferrer");
-      }
-
-    async function checkPort(port) {
-      try {
-        const res = await fetch(
-          `${location.protocol}//${location.hostname}:${port}/`,
-          { mode: "no-cors" }
-        );
-        return true;
-      } catch {
-        return false;
-      }
-    }
-
-
-    </script>
-
-
   </body>
 </html>
