@@ -286,7 +286,7 @@
 
 <script>
   var unityInstance = null;
-  const toolPorts = { attacker: 6088, defender: 6080 };
+  const toolPorts = { attacker: 6088, defender: 6080, caldera: 8888 };
 
   function openToolPort(port) {
     const proto = window.location.protocol;   // http: or https:
@@ -311,6 +311,7 @@
   const toolState = {
     attacker: { current: null, okStreak: 0, failStreak: 0 },
     defender: { current: null, okStreak: 0, failStreak: 0 },
+    caldera:  { current: null, okStreak: 0, failStreak: 0 },
   };
 
   function setToolStatus(toolName, ok, detailText) {
@@ -377,13 +378,15 @@
   }
 
   async function pollOnce() {
-    const [attOk, defOk] = await Promise.all([
+    const [attOk, defOk, calOk] = await Promise.all([
       checkPort(toolPorts.attacker),
       checkPort(toolPorts.defender),
+      checkPort(toolPorts.caldera),
     ]);
 
     applyStabilizedResult("attacker", attOk);
     applyStabilizedResult("defender", defOk);
+    applyStabilizedResult("caldera",  calOk);
 
     const next = anyUnstable() ? POLL_MS_UNSTABLE : POLL_MS_STABLE;
     setTimeout(pollOnce, next);
@@ -495,6 +498,19 @@ const SIM_POLL_MS = 3000;
               <span class="tool-status">
                 <span id="defenderDot" class="tool-dot"></span>
                 <span id="defenderText" class="tool-status-text">Checking…</span>
+              </span>
+            </div>
+          </div>
+        </button>
+
+        <button class="btn" onclick="openToolPort(8888)">
+          <div class="icon">🌋</div>
+          <div class="meta">
+            <div class="label">Caldera</div>
+            <div class="hint">
+              <span class="tool-status">
+                <span id="calderaDot" class="tool-dot"></span>
+                <span id="calderaText" class="tool-status-text">Checking…</span>
               </span>
             </div>
           </div>
