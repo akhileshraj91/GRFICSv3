@@ -341,6 +341,8 @@ void MAIN1_init__(MAIN1 *data__, BOOL retain) {
   __INIT_VAR(data__->TEST_REAL,0,retain)
   __INIT_LOCATED(UINT,__MW30,data__->TEST_INT,retain)
   __INIT_LOCATED_VALUE(data__->TEST_INT,0)
+  __INIT_LOCATED(BOOL,__QX5_0,data__->RUN_BIT,retain)
+  __INIT_LOCATED_VALUE(data__->RUN_BIT,__BOOL_LITERAL(TRUE))
 }
 
 // Code part
@@ -485,6 +487,12 @@ void MAIN1_body__(MAIN1 *data__) {
     (UINT)__GET_LOCATED(data__->PRESSURE_SP,),
     (UINT)65535));
   __SET_LOCATED(data__->,PRODUCT_FLOW_SETPOINT,,30000);
+  if (!(__GET_LOCATED(data__->RUN_BIT,))) {
+    __SET_LOCATED(data__->,F1_VALVE_SP,,0);
+    __SET_LOCATED(data__->,F2_VALVE_SP,,0);
+    __SET_LOCATED(data__->,PURGE_VALVE_SP,,65535);
+    __SET_LOCATED(data__->,PRODUCT_VALVE_SP,,65535);
+  };
 
   goto __end;
 

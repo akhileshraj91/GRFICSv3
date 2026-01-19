@@ -177,6 +177,7 @@ PROGRAM main1
   END_VAR
   VAR
     test_int AT %MW30 : UINT;
+    run_bit AT %QX5.0 : BOOL := TRUE;
   END_VAR
 
 
@@ -235,6 +236,13 @@ PROGRAM main1
   pressure_sp := LIMIT(0, pressure_sp, 65535);
 
   product_flow_setpoint := 30000;
+
+  IF NOT run_bit THEN
+     f1_valve_sp := 0;
+     f2_valve_sp := 0;
+     purge_valve_sp := 65535;
+     product_valve_sp := 65535;
+  END_IF;
 END_PROGRAM
 
 FUNCTION_BLOCK complex
