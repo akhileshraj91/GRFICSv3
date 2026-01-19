@@ -246,7 +246,7 @@ function finalize_install {
     else
         ./change_hardware_layer.sh blank_linux
     fi
-    ./compile_program.sh 690525.st
+    ./compile_program.sh "$(cat /workdir/webserver/active_program_default)"
     cat > "$OPENPLC_DIR/start_openplc.sh" <<EOF
 #!/bin/bash
 if [ -d "/docker_persistent" ]; then
