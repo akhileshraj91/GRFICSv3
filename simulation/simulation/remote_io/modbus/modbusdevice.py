@@ -28,16 +28,19 @@ async def read_with_timeout(reader, timeout):
     except Exception as e:
         print(f"An error occurred: {e}")
 
+
 async def readData(reader, writer, interval):
-    await asyncio.sleep(interval)
-    req_str = '{"request":"read"}\n'
-    await write_with_timeout(writer, req_str.encode(), 1)
-    await asyncio.sleep(interval)
-    response = await read_with_timeout(reader, 1)
-    try:
-        return json.loads(response.decode())
-    except:
-        return None
+    await write_with_timeout(writer, b'{"request":"read"}\n', 1)
+
+    latest = None
+    while True:
+        try:
+            line = await asyncio.wait_for(reader.readline(), timeout=0.01)
+            latest = json.loads(line.decode())
+        except asyncio.TimeoutError:
+            break
+
+    return latest
 
 async def writeData(name, writer, context, slave_id):
     values = context[slave_id].getValues(16, 1, count=1)

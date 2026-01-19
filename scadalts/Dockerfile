@@ -55,19 +55,16 @@ RUN sed -i '/<\/Context>/i \
   <Resource name="jdbc/scadalts" auth="Container" \
             type="javax.sql.DataSource" \
             maxTotal="100" maxIdle="30" maxWaitMillis="10000" \
-            username="root" password="root" \
+            username="scada" password="scada" \
             driverClassName="com.mysql.cj.jdbc.Driver" \
-            url="jdbc:mysql://localhost:3306/scadalts?serverTimezone=UTC"/>' \
+            url="jdbc:mysql://localhost:3306/scadalts?serverTimezone=UTC&amp;useSSL=false&amp;allowPublicKeyRetrieval=true"/>' \
     $CATALINA_HOME/conf/context.xml
 
-# Patch env.properties to use scada:scada direct JDBC
-RUN sed -i 's/^db.datasource=true/db.datasource=false/' $CATALINA_HOME/webapps/ROOT/WEB-INF/classes/env.properties && \
-    echo "db.url=jdbc:mysql://localhost:3306/scadalts?serverTimezone=UTC" >> $CATALINA_HOME/webapps/ROOT/WEB-INF/classes/env.properties && \
-    echo "db.username=scada" >> $CATALINA_HOME/webapps/ROOT/WEB-INF/classes/env.properties && \
-    echo "db.password=scada" >> $CATALINA_HOME/webapps/ROOT/WEB-INF/classes/env.properties
+
+
 
 COPY 1.png /usr/local/tomcat/static/uploads/1.png
-COPY seed_project.sql /seed_project.sql
+COPY seed_project_data.sql /seed_project_data.sql
 
 EXPOSE 8080 3306
 
