@@ -131,7 +131,8 @@ static const dbgvardsc_t dbgvardsc[] = {
 {&(RES0__INSTANCE0.HMI_PRODUCT_VALVE), INT_O_ENUM},
 {&(RES0__INSTANCE0.HMI_PRODUCT_FLOW), INT_O_ENUM},
 {&(RES0__INSTANCE0.TEST_REAL), REAL_ENUM},
-{&(RES0__INSTANCE0.TEST_INT), UINT_O_ENUM}
+{&(RES0__INSTANCE0.TEST_INT), UINT_O_ENUM},
+{&(RES0__INSTANCE0.RUN_BIT), BOOL_O_ENUM}
 };
 
 static const dbgvardsc_index_t retain_list[] = {

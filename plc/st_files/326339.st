@@ -1,26 +1,3 @@
-TYPE
-  LOGLEVEL : (CRITICAL, WARNING, INFO, DEBUG) := INFO;
-END_TYPE
-
-FUNCTION_BLOCK LOGGER
-  VAR_INPUT
-    TRIG : BOOL;
-    MSG : STRING;
-    LEVEL : LOGLEVEL := INFO;
-  END_VAR
-  VAR
-    TRIG0 : BOOL;
-  END_VAR
-
-  IF TRIG AND NOT TRIG0 THEN
-  {{
-   LogMessage(GetFbVar(LEVEL),(char*)GetFbVar(MSG, .body),GetFbVar(MSG, .len));
-  }}
-  END_IF;
-  TRIG0:=TRIG;
-END_FUNCTION_BLOCK
-
-
 FUNCTION scale_to_real : REAL
   VAR_INPUT
     raw_input_value : UINT := 0;
@@ -238,10 +215,10 @@ PROGRAM main1
   product_flow_setpoint := 30000;
 
   IF NOT run_bit THEN
-     f1_valve_sp := 0;
-     f2_valve_sp := 0;
-     purge_valve_sp := 65535;
-     product_valve_sp := 65535;
+    f1_valve_sp := 0;
+    f2_valve_sp := 0;
+    purge_valve_sp := 65535;
+    product_valve_sp := 65535;
   END_IF;
 END_PROGRAM
 
