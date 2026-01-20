@@ -65,8 +65,15 @@ corner keeps score — making this ideal for self-paced learning and classroom e
 ## 1. Prerequisites
 
 * **Recommended OS:** Linux (native, VM, or WSL2)
-  GRFICS uses Docker and Docker Compose. Linux provides the lightest and most reliable experience.
-* **Required packages:** Docker, Git, and Git LFS
+  GRFICS uses Docker and Docker Compose. Linux provides the lightest and most reliable experience, but following Docker's instructions for Windows should work fine too.
+* **Required packages:**
+  * For prebuilt images - Docker and Docker Compose
+  * For building from source - Docker, Docker Compose, Git, and Git LFS
+
+You can find an example walkthrough installation video here:
+https://youtu.be/X7YYCLJxMmo?si=qHRXlzfovdr3HsSZ
+
+Otherwise, you can follow the instructions below.
 
 Example install on Debian/Ubuntu:
 
