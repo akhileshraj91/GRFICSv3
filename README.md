@@ -1,6 +1,6 @@
 # GRFICSv3 —  Open Source OT Security Lab
 
-> **GRFICSv3** is a fully containerized cyber-physical simulation of a chemical plant.
+> **GRFICSv3** is a fully containerized OT / ICS cyber-physical security lab that simulates a industrial chemical plant.
 > It brings together realistic process dynamics, industrial protocols, engineering tools, and attacker infrastructure all inside Docker.
 >
 > Use it to explore **ICS / OT security**, practice **incident response**, or develop and test **defensive and offensive tools** in a safe, hands-on environment.
@@ -25,6 +25,10 @@ GRFICSv3 is designed for anyone learning or teaching **OT and ICS security**, in
 If you’ve ever wanted a realistic **OT security lab** without racks of hardware,
 this is for you.
 
+<p align="center">
+  <img src="/images/diagram.png" alt="Network diagram of OT security lab" width="700">
+</p>
+
 ---
 
 ## 🚀 Key Features
@@ -32,7 +36,7 @@ this is for you.
 * **End-to-end OT / ICS security lab** — PLCs, HMIs, engineering workstations, routers, and attacker tools
 * **3D process visualization** — watch tank levels and valves respond in real time
 * **Virtual Walkthroughs** — explore the warehouse in first person, observing physical layouts and security lapses 
-* **Built-in attack & defense tools** — Kali Linux, MITRE Caldera, and a custom router/IDS interface
+* **Built-in attack & defense tools** — Kali Linux, MITRE Caldera, and a custom firewall and Suricata IDS interface
 * **Modular, containerized design** — launch everything with a single `docker compose up`
 * **Realistic networking** — segmented process and enterprise zones with controllable traffic flow
 
