@@ -109,6 +109,8 @@ jobs:
               --push \
               --cache-from type=gha \
               --cache-to type=gha,mode=max \
+              --provenance=true \
+              --sbom=true \
               "./${SERVICE}"
             echo "🧹 Cleaning local build cache to free space..."
             docker builder prune -af || true
@@ -150,6 +152,8 @@ jobs:
               --push \
               --cache-from type=gha \
               --cache-to type=gha,mode=max \
+              --provenance=true \
+              --sbom=true \
               "./${SERVICE}"
             echo "🧹 Cleaning local build cache to free space..."
             docker builder prune -af || true
