@@ -202,7 +202,7 @@ jobs:
             echo "✅ Multi-arch manifest published for ${IMAGE}"
 
             echo "🔎 Resolving digest for ${IMAGE}"
-            DIGEST="$(docker buildx imagetools inspect "${IMAGE}" --format '{{.Digest}}')"
+            DIGEST="$(docker buildx imagetools inspect "${IMAGE}" --format '{{json .Manifest}}' | jq -r '.digest')"
             echo "🔏 Signing ${IMAGE}@${DIGEST} (keyless, GitHub OIDC, recursive)"
             cosign sign --recursive "${REPO}@${DIGEST}"
             echo "✅ Signed ${IMAGE}@${DIGEST}"
