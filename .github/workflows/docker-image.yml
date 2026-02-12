@@ -204,6 +204,6 @@ jobs:
             echo "🔎 Resolving digest for ${IMAGE}"
             DIGEST="$(docker buildx imagetools inspect "${IMAGE}" --format '{{json .Manifest}}' | jq -r '.digest')"
             echo "🔏 Signing ${IMAGE}@${DIGEST} (keyless, GitHub OIDC, recursive)"
-            cosign sign --recursive "${REPO}@${DIGEST}"
+            cosign sign -y "${REPO}@${DIGEST}"
             echo "✅ Signed ${IMAGE}@${DIGEST}"
           done
