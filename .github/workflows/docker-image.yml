@@ -105,7 +105,7 @@ jobs:
             echo "🚀 Building ${IMAGE}:${DOCKER_TAG} (amd64)"
             docker buildx build \
               --platform linux/amd64 \
-              --tag "${IMAGE}:amd64" \
+              --tag "${IMAGE}:${DOCKER_TAG}-amd64" \
               --push \
               --cache-from type=gha \
               --cache-to type=gha,mode=max \
@@ -148,7 +148,7 @@ jobs:
             echo "🚀 Building ${IMAGE}:${DOCKER_TAG} (arm64)"
             docker buildx build \
               --platform linux/arm64 \
-              --tag "${IMAGE}:arm64" \
+              --tag "${IMAGE}:${DOCKER_TAG}-arm64" \
               --push \
               --cache-from type=gha \
               --cache-to type=gha,mode=max \
@@ -190,15 +190,19 @@ jobs:
           set -euo pipefail
           SERVICES=$(echo '${{ needs.detect-changes.outputs.services }}' | jq -r '.[]')
           for SERVICE in $SERVICES; do
-            IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/grfics-${SERVICE}:${DOCKER_TAG}"
+            REPO="${{ secrets.DOCKERHUB_USERNAME }}/grfics-${SERVICE}"
+            IMAGE="${REPO}:${DOCKER_TAG}"
+
             echo "🔗 Creating multi-arch manifest for ${IMAGE}"
             docker buildx imagetools create \
               -t "${IMAGE}" \
-              "${IMAGE%:*}:amd64" \
-              "${IMAGE%:*}:arm64"
+              "${REPO}:${DOCKER_TAG}-amd64" \
+              "${REPO}:${DOCKER_TAG}-arm64"
             echo "✅ Multi-arch manifest published for ${IMAGE}"
 
-            echo "🔏 Signing ${IMAGE} (keyless, GitHub OIDC)"
-            cosign sign "${IMAGE}"
-            echo "✅ Signed ${IMAGE}"
+            echo "🔎 Resolving digest for ${IMAGE}"
+            DIGEST="$(docker buildx imagetools inspect "${IMAGE}" --format '{{.Digest}}')"
+            echo "🔏 Signing ${IMAGE}@${DIGEST} (keyless, GitHub OIDC, recursive)"
+            cosign sign --recursive "${REPO}@${DIGEST}"
+            echo "✅ Signed ${IMAGE}@${DIGEST}"
           done
