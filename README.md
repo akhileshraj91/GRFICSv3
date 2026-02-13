@@ -140,6 +140,7 @@ docker compose up -d
 ### 🏗️ Option B: Clone and build
 
 ```bash
+sudo apt install -y git git-lfs
 git clone https://github.com/Fortiphyd/GRFICSv3.git
 cd GRFICSv3
 docker compose build
