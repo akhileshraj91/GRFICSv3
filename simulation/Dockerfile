@@ -14,7 +14,6 @@ WORKDIR /build/simulation
 RUN make
 
 
-
 # ---- Stage 2: Runtime image ----
 FROM python:3.11-slim@sha256:7a3ed1226224bcc1fe5443262363d42f48cf832a540c1836ba8ccbeaadf8637c
 
@@ -40,6 +39,17 @@ COPY ./web_visualization /var/www/html/
 COPY ./nginx_config /etc/nginx/sites-enabled/default
 RUN chown -R www-data:www-data /var/www/
 #RUN chmod +x /var/www/html/data/index.php
+
+RUN set -e; \
+    echo "Checking for Git LFS pointer files..."; \
+    if grep -R --binary-files=without-match -n "version https://git-lfs.github.com/spec/v1" /var/www/html/Build 2>/dev/null; then \
+      echo ""; \
+      echo "ERROR: Git LFS files not present (pointer files detected)."; \
+      echo "Install git-lfs, then run: git lfs pull"; \
+      echo "Then try building again"; \
+      exit 1; \
+    fi
+
 
 # Set working directory
 WORKDIR /app
